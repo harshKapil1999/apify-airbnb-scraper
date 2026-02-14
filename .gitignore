@@ -34,3 +34,9 @@ results.json
 apify.json.deprecated
 debug-page.html
 deploy.sh
+
+
+# Environment Variables
+.env
+.env.example
+.env*
