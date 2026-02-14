@@ -1,0 +1,251 @@
+{
+    "title": "Airbnb Scraper",
+    "description": "Scrape listings from Airbnb with high-speed price sharding and customizable filters.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "locationQueries": {
+            "title": "Location Queries",
+            "description": "Enter cities or regions to search (e.g., London, Paris, New York).",
+            "type": "array",
+            "editor": "stringList",
+            "items": {
+                "type": "string"
+            },
+            "default": [
+                "London"
+            ],
+            "sectionCaption": "Search Input",
+            "sectionDescription": "Provide locations or direct URLs to scrape."
+        },
+        "startUrls": {
+            "title": "Start URLs",
+            "description": "Direct Airbnb listing or search URLs to scrape.",
+            "type": "array",
+            "editor": "requestListSources",
+            "items": {
+                "type": "object"
+            }
+        },
+        "checkIn": {
+            "title": "Check-In Date",
+            "description": "Check-in date in YYYY-MM-DD format. If empty, a 1-night stay in the future is used to force nightly pricing.",
+            "type": "string",
+            "editor": "datepicker",
+            "sectionCaption": "General Search Options",
+            "sectionDescription": "Options for general search."
+        },
+        "checkOut": {
+            "title": "Check-Out Date",
+            "description": "Check-out date in YYYY-MM-DD format.",
+            "type": "string",
+            "editor": "datepicker"
+        },
+        "locale": {
+            "title": "Locale",
+            "description": "Language/region for results.",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "en-US",
+                "en-GB",
+                "de-DE",
+                "fr-FR",
+                "es-ES",
+                "it-IT",
+                "ja-JP",
+                "zh-CN",
+                "pt-BR"
+            ],
+            "enumTitles": [
+                "English (United States)",
+                "English (United Kingdom)",
+                "German (Germany)",
+                "French (France)",
+                "Spanish (Spain)",
+                "Italian (Italy)",
+                "Japanese (Japan)",
+                "Chinese (China)",
+                "Portuguese (Brazil)"
+            ],
+            "default": "en-US"
+        },
+        "currency": {
+            "title": "Currency",
+            "type": "string",
+            "description": "Select the currency for prices. Standardizing on one currency is recommended for sharding.",
+            "default": "USD",
+            "enum": [
+                "USD",
+                "EUR",
+                "GBP",
+                "AUD",
+                "CAD",
+                "JPY",
+                "INR",
+                "SGD",
+                "AED",
+                "BRL",
+                "CHF",
+                "CNY",
+                "HKD",
+                "IDR",
+                "KRW",
+                "MXN",
+                "MYR",
+                "NZD",
+                "PHP",
+                "SAR",
+                "THB",
+                "TRY",
+                "TWD",
+                "VND",
+                "ZAR"
+            ],
+            "enumTitles": [
+                "United States Dollar (USD)",
+                "Euro (EUR)",
+                "British Pound (GBP)",
+                "Australian Dollar (AUD)",
+                "Canadian Dollar (CAD)",
+                "Japanese Yen (JPY)",
+                "Indian Rupee (INR)",
+                "Singapore Dollar (SGD)",
+                "United Arab Emirates Dirham (AED)",
+                "Brazilian Real (BRL)",
+                "Swiss Franc (CHF)",
+                "Chinese Yuan (CNY)",
+                "Hong Kong Dollar (HKD)",
+                "Indonesian Rupiah (IDR)",
+                "South Korean Won (KRW)",
+                "Mexican Peso (MXN)",
+                "Malaysian Ringgit (MYR)",
+                "New Zealand Dollar (NZD)",
+                "Philippine Peso (PHP)",
+                "Saudi Riyal (SAR)",
+                "Thai Baht (THB)",
+                "Turkish Lira (TRY)",
+                "New Taiwan Dollar (TWD)",
+                "Vietnamese Dong (VND)",
+                "South African Rand (ZAR)"
+            ]
+        },
+        "minPrice": {
+            "title": "Minimum Price",
+            "description": "Minimum price per night.",
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+        },
+        "maxPrice": {
+            "title": "Maximum Price",
+            "description": "Maximum price per night.",
+            "type": "integer",
+            "minimum": 0,
+            "default": 1000
+        },
+        "minBeds": {
+            "title": "Minimum Beds",
+            "description": "Minimum number of beds.",
+            "type": "integer",
+            "minimum": 0
+        },
+        "minBedrooms": {
+            "title": "Minimum Bedrooms",
+            "description": "Minimum number of bedrooms.",
+            "type": "integer",
+            "minimum": 0
+        },
+        "minBathrooms": {
+            "title": "Minimum Bathrooms",
+            "description": "Minimum number of bathrooms.",
+            "type": "integer",
+            "minimum": 0
+        },
+        "adults": {
+            "title": "Adults",
+            "description": "Number of adult guests.",
+            "type": "integer",
+            "minimum": 1
+        },
+        "children": {
+            "title": "Children",
+            "description": "Number of children.",
+            "type": "integer",
+            "minimum": 0
+        },
+        "infants": {
+            "title": "Infants",
+            "description": "Number of infants.",
+            "type": "integer",
+            "minimum": 0
+        },
+        "pets": {
+            "title": "Pets",
+            "description": "Number of pets.",
+            "type": "integer",
+            "minimum": 0
+        },
+        "maxListings": {
+            "title": "Maximum Listings",
+            "description": "Maximum number of listings to scrape. Set 0 for running without any limit.",
+            "type": "integer",
+            "default": 1000,
+            "minimum": 0,
+            "sectionCaption": "Run Options"
+        },
+        "proxyConfiguration": {
+            "title": "Proxy Settings",
+            "type": "object",
+            "description": "Use Apify Proxy to avoid IP blocking. Residential proxies are recommended for Airbnb.",
+            "editor": "hidden",
+            "default": {
+                "useApifyProxy": true
+            }
+        },
+        "simpleMode": {
+            "title": "Fast Mode (Search Results Only)",
+            "description": "Always enabled. Base data (title, price, rating, URL, thumbnail) is scraped from search result pages at high speed. Enable add-ons below to enrich listings with additional details like full descriptions, amenities, host info, and images — each add-on visits the listing page individually so it is slower.",
+            "type": "boolean",
+            "default": true,
+            "editor": "hidden",
+            "sectionCaption": "Scraping Add-ons",
+            "sectionDescription": "Base listing data is always scraped at high speed. Toggle add-ons below to enrich each listing with deeper details (each add-on visits the listing page, increasing scraping time and cost)."
+        },
+        "addOnDetails": {
+            "title": "Add-on: Full Listing Details",
+            "description": "Visit each listing to scrape full description, amenities, and house rules. (Slower, requires Fast Mode unchecked)",
+            "type": "boolean",
+            "default": false
+        },
+        "addOnHostDetails": {
+            "title": "Add-on: Host Details",
+            "description": "Visit each listing to scrape host information (Name, ID, Superhost status). (Slower, requires Fast Mode unchecked)",
+            "type": "boolean",
+            "default": false
+        },
+        "addOnImages": {
+            "title": "Add-on: Images",
+            "description": "Visit each listing to scrape high-resolution images. (Slower, requires Fast Mode unchecked)",
+            "type": "boolean",
+            "default": false
+        },
+        "enableHorizontalScaling": {
+            "title": "Enable Horizontal Scaling",
+            "type": "boolean",
+            "description": "Automatically enabled for high-speed parallel scraping.",
+            "default": true,
+            "editor": "hidden",
+            "sectionCaption": "Advance options",
+            "sectionDescription": "Advanced options for high-scale scraping."
+        },
+        "priceShardingStep": {
+            "title": "Price Range Step Size ($)",
+            "type": "integer",
+            "description": "Controls how much the price range is split during scraping. Smaller step sizes divide the range into more segments, helping collect more unique results. However, smaller steps also increase the total number of requests and make scraping slower. Larger step sizes scrape faster but may return fewer unique results.",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 100
+        }
+    }
+}

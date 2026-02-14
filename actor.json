@@ -1,0 +1,86 @@
+{
+    "actorSpecification": 1,
+    "name": "ultimate-airbnb-scraper",
+    "title": "Ultimate Airbnb Scraper | Pay Per Result",
+    "description": "Extract Airbnb listing data including prices, amenities, host info, and more. Supports location search and direct URL scraping with high-speed price sharding.",
+    "version": "1.0",
+    "buildTag": "latest",
+    "dockerfile": "../Dockerfile",
+    "input": "./input_schema.json",
+    "output": "./output_schema.json",
+    "pricingModel": {
+        "pricingType": "PAY_PER_EVENT",
+        "events": {
+            "listing-scraped": {
+                "title": "Listing Scraped",
+                "description": "Charged for each listing scraped (base data from search results or detail page).",
+                "pricePerUnit": 0.005
+            },
+            "addon-details": {
+                "title": "Add-on: Full Details",
+                "description": "Charged when the Full Listing Details add-on is enabled and a detail page is visited.",
+                "pricePerUnit": 0.01
+            },
+            "addon-host-details": {
+                "title": "Add-on: Host Details",
+                "description": "Charged when the Host Details add-on is enabled and host info is extracted.",
+                "pricePerUnit": 0.005
+            },
+            "addon-images": {
+                "title": "Add-on: Images",
+                "description": "Charged when the Images add-on is enabled and images are extracted.",
+                "pricePerUnit": 0.005
+            }
+        }
+    },
+    "storages": {
+        "dataset": {
+            "actorSpecification": 1,
+            "title": "Airbnb Scraper Output",
+            "views": {
+                "overview": {
+                    "title": "Overview",
+                    "transformation": {
+                        "fields": [
+                            "thumbnail",
+                            "name",
+                            "price",
+                            "rating",
+                            "beds",
+                            "bedrooms",
+                            "url"
+                        ]
+                    },
+                    "display": {
+                        "component": "table",
+                        "properties": {
+                            "thumbnail": {
+                                "label": "Image",
+                                "format": "image"
+                            },
+                            "name": {
+                                "label": "Name"
+                            },
+                            "price": {
+                                "label": "Price"
+                            },
+                            "rating": {
+                                "label": "Rating"
+                            },
+                            "beds": {
+                                "label": "Beds"
+                            },
+                            "bedrooms": {
+                                "label": "Bedrooms"
+                            },
+                            "url": {
+                                "label": "Link",
+                                "format": "link"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
