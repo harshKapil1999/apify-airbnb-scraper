@@ -3,6 +3,7 @@ import { createPlaywrightRouter } from 'crawlee';
 import fs from 'fs';
 import { extractListingUrls, extractListingDetails } from './extractors.js';
 import { LABELS } from './constants.js';
+import { chargeOrAbort } from './utils/charging.js';
 
 
 export const router = createPlaywrightRouter();
@@ -82,12 +83,9 @@ router.addHandler(LABELS.SEARCH, async ({ page, request, crawler, pushData, sess
 
     // CHARGE for duplicates as per user request (Monetization improvement)
     if (duplicateCount > 0) {
-        try {
-            // Charge 'listing-scraped' event for each duplicate found
-            await Actor.charge({ eventName: 'listing-scraped', count: duplicateCount });
-        } catch (e) {
-            // Ignore charging errors (e.g. running locally without events)
-        }
+        // Charge 'listing-scraped' event for each duplicate found
+        // Using strict chargeOrAbort to fails if credits run out
+        await chargeOrAbort('listing-scraped', duplicateCount);
     }
 
     // --- SEARCH SHARDING (Dynamic Splitting) ---
@@ -160,6 +158,8 @@ router.addHandler(LABELS.SEARCH, async ({ page, request, crawler, pushData, sess
     const listingsToProcess = listings.slice(0, remainingBeforeLoop);
 
 
+    let skippedCount = 0;
+
     for (const listing of listingsToProcess) {
         // Double check limits inside loop
         if (totalScrapedCount >= effectiveMaxListings) break;
@@ -170,7 +170,8 @@ router.addHandler(LABELS.SEARCH, async ({ page, request, crawler, pushData, sess
         // Extract ID from URL for deduplication
         const listingId = url.match(/\/rooms\/(\d+)/)?.[1] || url;
         if (scrapedListingIds.has(listingId)) {
-            // Already scraped in a previous shard or page — skip silently
+            // Already scraped in a previous shard or page — skip silently but COUNT it for charging
+            skippedCount++;
             continue;
         }
 
@@ -193,8 +194,8 @@ router.addHandler(LABELS.SEARCH, async ({ page, request, crawler, pushData, sess
                 const insideGlobal = (gMinP === undefined || amount >= gMinP) && (gMaxP === undefined || amount <= gMaxP);
 
                 if (!insideGlobal) {
-                    // Outside global user range — skip entirely
-
+                    // Outside global user range — skip entirely but COUNT it for charging
+                    skippedCount++;
                     continue;
                 } else if (!insideShard && insideGlobal) {
                     // Outside shard but inside global — KEEP (optimization!)
@@ -258,11 +259,7 @@ router.addHandler(LABELS.SEARCH, async ({ page, request, crawler, pushData, sess
 
                 // === PAY-PER-EVENT MONETIZATION ===
                 // Charge for each successfully scraped listing
-                try {
-                    await Actor.charge({ eventName: 'listing-scraped', count: 1 });
-                } catch (chargeErr) {
-                    // Charging may fail locally or if PPE is not configured
-                }
+                await chargeOrAbort('listing-scraped', 1);
             } catch (err) {
                 console.error(`[SEARCH] Failed to push listing ${url}`);
             }
@@ -271,6 +268,11 @@ router.addHandler(LABELS.SEARCH, async ({ page, request, crawler, pushData, sess
         if (totalScrapedCount === 1 || totalScrapedCount % 10 === 0) {
             console.log(`[PROGRESS] Scraped ${totalScrapedCount}/${effectiveMaxListings === Infinity ? '∞' : effectiveMaxListings} listings`);
         }
+    }
+
+    // Charge for skipped listings (Global duplicates + Price filtered)
+    if (skippedCount > 0) {
+        await chargeOrAbort('listing-scraped', skippedCount);
     }
 
     // Handle pagination
@@ -561,20 +563,17 @@ router.addHandler(LABELS.DETAIL, async ({ page, request, pushData }) => {
 
         // === PAY-PER-EVENT MONETIZATION (Deep Mode) ===
         // Base listing charge
-        try {
-            await Actor.charge({ eventName: 'listing-scraped', count: 1 });
-        } catch (chargeErr) {
-        }
+        await chargeOrAbort('listing-scraped', 1);
 
         // Granular add-on charges
         if (addOnDetails) {
-            try { await Actor.charge({ eventName: 'addon-details', count: 1 }); } catch (_e) { }
+            await chargeOrAbort('addon-details', 1);
         }
         if (addOnHostDetails) {
-            try { await Actor.charge({ eventName: 'addon-host-details', count: 1 }); } catch (_e) { }
+            await chargeOrAbort('addon-host-details', 1);
         }
         if (addOnImages) {
-            try { await Actor.charge({ eventName: 'addon-images', count: 1 }); } catch (_e) { }
+            await chargeOrAbort('addon-images', 1);
         }
 
         // Note: We do NOT increment totalScrapedCount here because it was already incremented 
