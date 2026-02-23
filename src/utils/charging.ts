@@ -12,14 +12,22 @@ export async function chargeOrAbort(eventName: string, count: number = 1): Promi
 
     try {
         await Actor.charge({ eventName, count });
-    } catch (error) {
-        console.error(`[CRITICAL] Failed to charge for event '${eventName}' (count: ${count}). Aborting actor run.`);
+    } catch (error: any) {
+        const errorMessage = error?.message || '';
+        const isCreditError = errorMessage.toLowerCase().includes('credit') ||
+            errorMessage.toLowerCase().includes('balance') ||
+            errorMessage.toLowerCase().includes('exhausted');
+
+        const failureMessage = isCreditError
+            ? `User credits exhausted. Component: ${eventName}. Please top up your Apify account to continue.`
+            : `Credit charge failed for event: ${eventName}. Stop reason: Insufficient credits or API error. Detail: ${errorMessage}`;
+
+        console.error(`[CRITICAL] ${failureMessage}`);
         console.error(error);
 
         // Fail the run immediately. This stops the actor and signals failure.
-        // We use exit(1) to force a non-zero exit code if Actor.fail() is not enough or to be doubly sure.
         try {
-            await Actor.fail(`Credit charge failed for event: ${eventName}. Stop reason: Insufficient credits or API error.`);
+            await Actor.fail(failureMessage);
         } catch (e) {
             // If fail() throws, force exit
             process.exit(1);

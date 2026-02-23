@@ -1,0 +1,230 @@
+{
+    "actorSpecification": 1,
+    "fields": {
+        "url": {
+            "title": "URL",
+            "type": "string",
+            "description": "The URL of the listing."
+        },
+        "listingId": {
+            "title": "ID",
+            "type": "string",
+            "description": "Unique identifier of the listing."
+        },
+        "listingTitle": {
+            "title": "Title",
+            "type": "string",
+            "description": "Title of the listing."
+        },
+        "price": {
+            "title": "Price",
+            "type": "object",
+            "description": "Price information.",
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                }
+            }
+        },
+        "rating": {
+            "title": "Rating",
+            "type": [
+                "number",
+                "string"
+            ],
+            "description": "Average rating."
+        },
+        "reviewsCount": {
+            "title": "Reviews Count",
+            "type": "integer",
+            "description": "Number of reviews."
+        },
+        "roomType": {
+            "title": "Room Type",
+            "type": "string",
+            "description": "Type of room (e.g. Entire home)."
+        },
+        "thumbnail": {
+            "title": "Thumbnail",
+            "type": "string",
+            "description": "URL of the thumbnail image."
+        },
+        "host": {
+            "title": "Host",
+            "type": "object",
+            "description": "Host information.",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "isSuperhost": {
+                    "type": "boolean"
+                },
+                "yearsHosting": {
+                    "type": "integer"
+                },
+                "hostType": {
+                    "type": "string"
+                }
+            }
+        },
+        "beds": {
+            "title": "Beds",
+            "type": [
+                "integer",
+                "string"
+            ]
+        },
+        "bedrooms": {
+            "title": "Bedrooms",
+            "type": [
+                "integer",
+                "string"
+            ]
+        },
+        "bathrooms": {
+            "title": "Bathrooms",
+            "type": [
+                "number",
+                "string"
+            ]
+        },
+        "personCapacity": {
+            "title": "Capacity",
+            "type": "integer"
+        },
+        "listingDescription": {
+            "title": "Description",
+            "type": "string",
+            "description": "Detailed description of the listing."
+        },
+        "subDescription": {
+            "title": "Sub Description",
+            "type": "string"
+        },
+        "houseRules": {
+            "title": "House Rules",
+            "type": "string"
+        },
+        "amenitiesCsv": {
+            "title": "Amenities (CSV)",
+            "type": "string",
+            "description": "Comma-separated list of amenities for CSV export."
+        },
+        "imagesCsv": {
+            "title": "Images (CSV)",
+            "type": "string",
+            "description": "Comma-separated list of image URLs for CSV export."
+        },
+        "scrapedAt": {
+            "title": "Scraped At",
+            "type": "string",
+            "format": "date-time"
+        }
+    },
+    "views": {
+        "overview": {
+            "title": "Overview",
+            "transformation": {
+                "fields": [
+                    "thumbnail",
+                    "listingTitle",
+                    "price",
+                    "rating",
+                    "host",
+                    "beds",
+                    "bedrooms",
+                    "url"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "thumbnail": {
+                        "label": "Image",
+                        "format": "image"
+                    },
+                    "listingTitle": {
+                        "label": "Title"
+                    },
+                    "price": {
+                        "label": "Price"
+                    },
+                    "rating": {
+                        "label": "Rating"
+                    },
+                    "host": {
+                        "label": "Host"
+                    },
+                    "beds": {
+                        "label": "Beds"
+                    },
+                    "bedrooms": {
+                        "label": "Bedrooms"
+                    },
+                    "url": {
+                        "label": "Link",
+                        "format": "link"
+                    }
+                }
+            }
+        },
+        "detailed": {
+            "title": "Detailed View",
+            "transformation": {
+                "fields": [
+                    "listingId",
+                    "listingTitle",
+                    "listingDescription",
+                    "roomType",
+                    "price",
+                    "host",
+                    "amenitiesCsv",
+                    "imagesCsv",
+                    "scrapedAt"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "listingId": {
+                        "label": "ID"
+                    },
+                    "listingTitle": {
+                        "label": "Title"
+                    },
+                    "listingDescription": {
+                        "label": "Description"
+                    },
+                    "roomType": {
+                        "label": "Room Type"
+                    },
+                    "price": {
+                        "label": "Price"
+                    },
+                    "host": {
+                        "label": "Host"
+                    },
+                    "amenitiesCsv": {
+                        "label": "Amenities"
+                    },
+                    "imagesCsv": {
+                        "label": "Images"
+                    },
+                    "scrapedAt": {
+                        "label": "Scraped At"
+                    }
+                }
+            }
+        }
+    }
+}

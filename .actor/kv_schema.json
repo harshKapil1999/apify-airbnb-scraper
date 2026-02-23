@@ -1,0 +1,20 @@
+{
+    "actorSpecification": 1,
+    "actorKeyValueStoreSchemaVersion": 1,
+    "title": "Key-Value Store Schema",
+    "description": "Standard Apify Key-Value Store",
+    "collections": {
+        "outputs": {
+            "title": "Outputs",
+            "keyPrefix": "OUTPUT_",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

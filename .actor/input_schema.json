@@ -190,7 +190,7 @@
             "title": "Maximum Listings",
             "description": "Maximum number of listings to scrape. Set 0 for running without any limit.",
             "type": "integer",
-            "default": 1000,
+            "default": 10,
             "minimum": 0,
             "sectionCaption": "Run Options"
         },
